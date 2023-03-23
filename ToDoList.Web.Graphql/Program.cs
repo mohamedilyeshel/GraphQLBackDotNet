@@ -1,9 +1,14 @@
 using HotChocolate.Types.Pagination;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 using ToDoList.Common.CustomExceptions.ErrorFilter;
 using ToDoList.DataAccess;
 using ToDoList.DataAccess.Repositories;
 using ToDoList.DataAccess.Schema.Queries;
+using ToDoList.Web.Graphql.AuthModel;
 using ToDoList.Web.Graphql.DataLoaders;
 using ToDoList.Web.Graphql.Schema.Mutations;
 using ToDoList.Web.Graphql.Schema.Subscriptions;
@@ -17,6 +22,22 @@ builder.Services.AddDbContext<ToDoListContext>(options => options.UseSqlServer(
 builder.Services.AddErrorFilter<AppErrorFilter>();
 builder.Services.AddTransient(typeof(UserRepository));
 builder.Services.AddTransient(typeof(ToDoRepository));
+builder.Services.Configure<TokenSettings>(builder.Configuration.GetSection("TokenSettings"));
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+        {
+            options.TokenValidationParameters = new TokenValidationParameters
+            {
+                ValidIssuer = builder.Configuration.GetSection("TokenSettings").GetValue<string>("Issuer"),
+                ValidateIssuer = true,
+                ValidAudience = builder.Configuration.GetSection("TokenSettings").GetValue<string>("Audience"),
+                ValidateAudience = true,
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration.GetSection("TokenSettings").GetValue<string>("Key"))),
+                ValidateIssuerSigningKey = true
+            };
+        }
+    );
+builder.Services.AddAuthorization();
 builder.Services
     .AddGraphQLServer()
     .AddInMemorySubscriptions()
@@ -34,10 +55,15 @@ builder.Services
     })
     .AddFiltering()
     .AddProjections()
-    .AddDataLoader<UserBatchDataLoader>();
+    .AddDataLoader<UserBatchDataLoader>()
+    .AddAuthorization();
 
 
 var app = builder.Build();
+
+app.UseAuthentication();
+
+app.UseAuthorization();
 
 app.UseWebSockets();
 

@@ -13,5 +13,6 @@ namespace ToDoList.Entities.Inputs
         public string? LastName { get; set; }
         public string? Email { get; set; }
         public DateTime? BirthdayDate { get; set; }
+        public string? Password { get; set; }
     }
 }

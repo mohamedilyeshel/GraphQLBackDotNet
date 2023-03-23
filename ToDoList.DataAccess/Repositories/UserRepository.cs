@@ -14,6 +14,37 @@ namespace ToDoList.DataAccess.Repositories
             _context = context;
         }
 
+        public async Task<User> UserExistLogin(LoginInput loginInput)
+        {
+            var userExist = await _context.Users.FirstOrDefaultAsync(user => user.Email == loginInput.Email && user.Password == loginInput.Password);
+            if (userExist == null)
+            {
+                throw new AppException("Email/Password is incorrect");
+            }
+            return userExist;
+        }
+
+        public async Task UserRegister(RegisterInput registerInput)
+        {
+            var userExist = await _context.Users.FirstOrDefaultAsync(user => user.Email == registerInput.Email);
+            if (userExist != null)
+            {
+                throw new AppException("Account Already Exists");
+            }
+
+            User newUser = new User
+            {
+                FirstName = registerInput.FirstName,
+                LastName = registerInput.LastName,
+                Email = registerInput.Email,
+                BirthdayDate = registerInput.BirthdayDate,
+                Password = registerInput.Password,
+            };
+
+            await _context.Users.AddAsync(newUser);
+            await _context.SaveChangesAsync();
+        }
+
         public IQueryable<User> GetUsers()
         {
             var users = _context.Users.Include(u => u.ToDos);
@@ -49,6 +80,7 @@ namespace ToDoList.DataAccess.Repositories
                     LastName = user.LastName,
                     Email = user.Email,
                     BirthdayDate = user.BirthdayDate,
+                    Password = user.Password,
                 };
                 await _context.AddAsync(newUser);
                 await _context.SaveChangesAsync();
@@ -91,13 +123,18 @@ namespace ToDoList.DataAccess.Repositories
                     userToUpdate.BirthdayDate = user.BirthdayDate;
                 }
 
+                if(!string.IsNullOrEmpty(user.Password)) 
+                {
+                    userToUpdate.Password = user.Password;
+                }
+
                 _context.Entry(userToUpdate).State = EntityState.Modified;
                 await _context.SaveChangesAsync();
                 return userToUpdate;
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                throw new AppException("Error updating user");
+                throw new AppException(e.Message != null ? e.Message : "Error updating user");
             }
         }
 
@@ -116,9 +153,9 @@ namespace ToDoList.DataAccess.Repositories
 
                 return user;
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                throw new AppException("Error deleting user");
+                throw new AppException(e.Message != null ? e.Message : "Error deleting user");
             }
         }
     }

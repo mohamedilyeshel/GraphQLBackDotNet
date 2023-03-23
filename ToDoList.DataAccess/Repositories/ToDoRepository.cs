@@ -60,7 +60,7 @@ namespace ToDoList.DataAccess.Repositories
 
                 if (toDoToUpdate == null)
                 {
-                    throw new AppException("User doesn't exist");
+                    throw new AppException("ToDo doesn't exist");
                 }
 
                 if (!string.IsNullOrEmpty(toDo.Content))
@@ -79,9 +79,9 @@ namespace ToDoList.DataAccess.Repositories
                 await _context.SaveChangesAsync();
                 return "ToDo Edited";
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                throw new AppException("Error updating ToDo");
+                throw new AppException(e.Message != null ? e.Message : "Error updating ToDo");
             }
         }
 
@@ -100,9 +100,9 @@ namespace ToDoList.DataAccess.Repositories
 
                 return "ToDo Deleted";
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                throw new AppException("Error deleting ToDo");
+                throw new AppException(e.Message != null ? e.Message : "Error deleting ToDo");
             }
         }
     }

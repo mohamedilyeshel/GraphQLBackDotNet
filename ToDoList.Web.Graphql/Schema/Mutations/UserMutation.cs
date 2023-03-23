@@ -1,4 +1,5 @@
-﻿using HotChocolate.Subscriptions;
+﻿using HotChocolate.Authorization;
+using HotChocolate.Subscriptions;
 using Microsoft.EntityFrameworkCore;
 using ToDoList.Common;
 using ToDoList.Common.CustomExceptions;
@@ -11,6 +12,7 @@ namespace ToDoList.Web.Graphql.Schema.Mutations
     [ExtendObjectType(typeof(Mutation))]
     public class UserMutation
     {
+        [Authorize]
         [Error(typeof(AppException))]
         public async Task<User> AddUser(UserAddInput user, [Service] UserRepository userRepository, [Service] ITopicEventSender sender)
         {

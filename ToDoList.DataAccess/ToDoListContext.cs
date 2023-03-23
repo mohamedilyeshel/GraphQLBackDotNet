@@ -26,6 +26,7 @@ namespace ToDoList.DataAccess
                     FirstName = "Hamdi",
                     LastName = "Bali",
                     Email = "hamdi@gmail.com",
+                    Password = "123456",
                     BirthdayDate = DateTime.Now,
                 },
                 new User {
@@ -33,6 +34,7 @@ namespace ToDoList.DataAccess
                     FirstName = "Mahdi",
                     LastName = "Bougriba",
                     Email = "mahdi@gmail.com",
+                    Password = "123456",
                     BirthdayDate = DateTime.Now,
                 },
                 new User {
@@ -40,6 +42,7 @@ namespace ToDoList.DataAccess
                     FirstName = "Ilyes",
                     LastName = "Helal",
                     Email = "ilyes@gmail.com",
+                    Password = "123456",
                     BirthdayDate = DateTime.Now,
                 },
                 new User {
@@ -47,6 +50,7 @@ namespace ToDoList.DataAccess
                     FirstName = "Rayen",
                     LastName = "Zebi",
                     Email = "rayen@gmail.com",
+                    Password = "123456",
                     BirthdayDate = DateTime.Now,
                 },
             };
