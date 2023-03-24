@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using ToDoList.Common.CustomExceptions;
-using ToDoList.DataAccess;
 using ToDoList.Entities.Inputs;
 using ToDoList.Web.Graphql.AuthModel;
 using ToDoList.Common;
@@ -22,7 +21,8 @@ namespace ToDoList.Web.Graphql.Schema.Mutations
             }
             catch (Exception e)
             {
-                throw new AppException(e.Message != null ? e.Message : "Server Error");
+                //throw new AppException(e.Message != null ? e.Message : "Server Error");
+                throw new GraphQLException(e.Message);
             }
         }
 

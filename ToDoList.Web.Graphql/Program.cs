@@ -22,6 +22,17 @@ builder.Services.AddDbContext<ToDoListContext>(options => options.UseSqlServer(
 builder.Services.AddErrorFilter<AppErrorFilter>();
 builder.Services.AddTransient(typeof(UserRepository));
 builder.Services.AddTransient(typeof(ToDoRepository));
+builder.Services.AddCors(
+    options =>
+    {
+        options.AddPolicy("AllowAnyOrigin", builder =>
+        {
+            builder.AllowAnyOrigin()
+            .AllowAnyMethod()
+            .AllowAnyHeader();
+        });
+    }
+    );
 builder.Services.Configure<TokenSettings>(builder.Configuration.GetSection("TokenSettings"));
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -66,6 +77,8 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.UseWebSockets();
+
+app.UseCors("AllowAnyOrigin");
 
 app.MapGraphQL("/todolist");
 
