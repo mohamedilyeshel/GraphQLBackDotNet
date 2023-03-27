@@ -1,9 +1,14 @@
+using HotChocolate;
+using HotChocolate.AspNetCore.Serialization;
 using HotChocolate.Types.Pagination;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using ToDoList.Common;
+using ToDoList.Common.CustomExceptions;
 using ToDoList.Common.CustomExceptions.ErrorFilter;
 using ToDoList.DataAccess;
 using ToDoList.DataAccess.Repositories;
@@ -19,7 +24,10 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<ToDoListContext>(options => options.UseSqlServer(
     builder.Configuration.GetConnectionString("DbConString")).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking)
 , ServiceLifetime.Transient);
-builder.Services.AddErrorFilter<AppErrorFilter>();
+
+var options = new HttpResponseFormatterOptions();
+builder.Services.AddHttpResponseFormatter<CustomHttpResponse>(_ => new CustomHttpResponse(options));
+
 builder.Services.AddTransient(typeof(UserRepository));
 builder.Services.AddTransient(typeof(ToDoRepository));
 builder.Services.AddCors(
@@ -68,7 +76,6 @@ builder.Services
     .AddProjections()
     .AddDataLoader<UserBatchDataLoader>()
     .AddAuthorization();
-
 
 var app = builder.Build();
 

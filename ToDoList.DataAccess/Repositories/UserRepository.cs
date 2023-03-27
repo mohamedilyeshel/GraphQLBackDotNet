@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using HotChocolate;
+using Microsoft.EntityFrameworkCore;
 using ToDoList.Common.CustomExceptions;
 using ToDoList.Entities.Inputs;
 using ToDoList.Entities.Models;
@@ -19,7 +20,7 @@ namespace ToDoList.DataAccess.Repositories
             var userExist = await _context.Users.FirstOrDefaultAsync(user => user.Email == loginInput.Email && user.Password == loginInput.Password);
             if (userExist == null)
             {
-                throw new AppException("Email/Password is incorrect");
+                throw new GraphQLException("Email/Password is incorrect");
             }
             return userExist;
         }
