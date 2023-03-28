@@ -6,23 +6,26 @@ using ToDoList.Web.Graphql.AuthModel;
 using ToDoList.Common;
 using ToDoList.DataAccess.Repositories;
 using ToDoList.Common.CustomExceptions.ErrorFilter;
+using ToDoList.Common.GenericResponses;
 
 namespace ToDoList.Web.Graphql.Schema.Mutations
 {
     public class Mutation
     {
         //[Error(typeof(AppException))]
-        public async Task<string> Login(LoginInput loginInput, [Service] UserRepository userRepository, [Service] IOptions<TokenSettings> tokenSettings)
+        public async Task<ResponseService<string>> Login(LoginInput loginInput, [Service] UserRepository userRepository, [Service] IOptions<TokenSettings> tokenSettings)
         {
             try
             {
+                ResponseService<string> response = new ResponseService<string>();
                 var userExist = await userRepository.UserExistLogin(loginInput);
                 var token = CommonUtilities.GenerateJWT(userExist, tokenSettings.Value.Issuer, tokenSettings.Value.Audience, tokenSettings.Value.Key);
-                return token;
+                response.Data = token;
+                return response;
             }
             catch (GraphQLException e)
             {
-                throw new GraphQLException(new Error(e.Message, "NOT_EXIST"));
+                return CommonUtilities.GenerateErrorReponse<string>(e.Errors.FirstOrDefault()?.Code ?? "5", e.Message);
             }
         }
 

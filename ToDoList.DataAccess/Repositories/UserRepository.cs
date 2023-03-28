@@ -20,7 +20,7 @@ namespace ToDoList.DataAccess.Repositories
             var userExist = await _context.Users.FirstOrDefaultAsync(user => user.Email == loginInput.Email && user.Password == loginInput.Password);
             if (userExist == null)
             {
-                throw new GraphQLException("Email/Password is incorrect");
+                throw new GraphQLException(new Error("Email/Password is incorrect", "0"));
             }
             return userExist;
         }

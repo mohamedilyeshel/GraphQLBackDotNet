@@ -25,9 +25,6 @@ builder.Services.AddDbContext<ToDoListContext>(options => options.UseSqlServer(
     builder.Configuration.GetConnectionString("DbConString")).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking)
 , ServiceLifetime.Transient);
 
-var options = new HttpResponseFormatterOptions();
-builder.Services.AddHttpResponseFormatter<CustomHttpResponse>(_ => new CustomHttpResponse(options));
-
 builder.Services.AddTransient(typeof(UserRepository));
 builder.Services.AddTransient(typeof(ToDoRepository));
 builder.Services.AddCors(
